@@ -7,6 +7,7 @@ export default class ProductModel{
     this.imageUrl = _imageUrl;
   }
 
+
  static update(productObj){
   const index = products.findInbox(
     (p)=> p.id == productObj.id

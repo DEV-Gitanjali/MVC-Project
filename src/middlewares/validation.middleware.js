@@ -1,7 +1,8 @@
 import { body, validationResult } from 'express-validator'; // Import validationResult instead of validateRequest
 
 const validateRequestMiddleware = async (req, res, next) => { // Rename the local function
-
+    
+    console.log(req.body);
     // 1. Setup rules for validation
     const rules = [
         body('name')
@@ -12,9 +13,9 @@ const validateRequestMiddleware = async (req, res, next) => { // Rename the loca
             .isFloat({ gt: 0 })
             .withMessage('Price should be a positive value'),
 
-        body('imageURL')
-            .isURL()
-            .withMessage('Invalid URL'),
+        // body('imageURL')
+        //     .isURL()
+        //     .withMessage('Invalid URL'),
     ];
 
     // 2. Run those rules

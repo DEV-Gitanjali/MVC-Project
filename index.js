@@ -1,20 +1,32 @@
 import express from 'express';
 import ProductController from "./src/controllers/product.controller.js";
+import UserController from "./src/controllers/user.controller.js";
 import ejsLayouts from "express-ejs-layouts";
 import path from "path";
 import validationMiddleware from './src/middlewares/validation.middleware.js';
+import { uploadFile } from './src/middlewares/file-upload.middleware.js';
+import session from 'express-session'
+import {auth} from './src/middlewares/auth.middleware.js';
+
 
 const server = express();
 server.use(express.static('public'));
+server.use(session({
+ secret:'Secretkey',
+ resave: false,
+ saveUninitialized: true,
+ cookie: { secure: false }  // change this to true in production environment to enable HTTPS secure cookies.
+}));
 
 
 // server.use(express.static('src/views'));
 
 // Create an instance of ProductController
 const productController = new ProductController();
+const usersController = new UserController();
 
 
-// setup view engine settings
+// setup view engine settingsnode 
 server.use( ejsLayouts);
 server.use(express.json());
 server.set('view engine', 'ejs');
@@ -22,17 +34,22 @@ server.set("views", path.join(path.resolve(),"src", "views"));
 //parse form data
 server.use(express.urlencoded({extended:true}));  
 
-server.get('/', productController.getProducts);
+server.get('/', auth, productController.getProducts);
+server.get('/register', usersController.getRegister);
+server.get('/login', usersController.getLogin);
+server.post('/login', usersController.postLogin);
+server.get('/login', usersController.logout);
 
-server.get('/add-product', productController.getAddProduct);
+server.post('/register', usersController.postRegister);
 
-server.get("/update-product/:id" , productController.getUpdateProductView);
+server.get('/add-product', auth,productController.getAddProduct);
+server.get("/update-product/:id" ,auth, productController.getUpdateProductView);
+server.post('/delete-product/:id',auth, productController.deleteProduct);
+server.post('/',uploadFile.single('imageUrl'),
+  validationMiddleware,   
+  productController.postAddProduct);
 
-server.post('/delete-product/:id', productController.deleteProduct);
-
-server.post('/', validationMiddleware,productController.postAddProduct);
-
-server.get("/update-product", productController.postUpdateProduct)
+server.get("/update-product",auth, productController.postUpdateProduct)
 
 
 

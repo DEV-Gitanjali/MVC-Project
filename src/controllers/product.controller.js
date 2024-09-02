@@ -6,7 +6,7 @@ export default class ProductController{
     getProducts(req,res){
         let products = ProductModel.get();
         console.log(products)
-        res.render('index', { products});
+        res.render('index', { products , userEmail:req.session.userEmail});
 
         // console.log(path.resolve());
         // return res.sendFile(path.join(path.resolve(),'src','views','products.html' ),)
@@ -37,8 +37,7 @@ export default class ProductController{
 
     postAddProduct(req, res , next){  
         ProductModel.add(req.body);
-        var products = ProductModel.getAll();
-        res.render('index' ,{products})
+        res.render('index' , { products , userEmail:req.session.userEmail})
     }
 
     getUpdateProductView(req, res, next){
@@ -50,6 +49,7 @@ export default class ProductController{
             res.render('update-product', {
                 product: productFound,
                 errorMessage: null,
+             userEmail:req.session.userEmail
             });
            }
         // 2.else return errors
@@ -60,7 +60,7 @@ export default class ProductController{
     }
 
     postUpdateProduct(req , res){
-    
+
         ProductModel.update(req.body);
         var products = ProductModel.getAll();
         res.render('index' ,{products})
@@ -76,11 +76,11 @@ export default class ProductController{
 
         ProductModel.delete(id);
         var products = ProductModel.getAll();
-        res.render('index' ,{products})
+        res.render('index' ,{products , userEmail:req.session.userEmail})
+    }
     }
 
 
-    }
 
 
 
